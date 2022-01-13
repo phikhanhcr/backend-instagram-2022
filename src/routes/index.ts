@@ -3,11 +3,15 @@ const route = express.Router();
 
 import { authRouter } from './authRoute';
 import { homeRouter } from './homeRoute';
-
+import { commentRouter } from './commentRoute'
+import { postRouter } from './postRoute'
 let initialRouter = (app) => {
-
-  homeRouter(route, app);
+  
   authRouter(route, app);
+  homeRouter(route, app);
+  commentRouter(route, app);
+  postRouter(route, app);
+  
 }
 
 export {

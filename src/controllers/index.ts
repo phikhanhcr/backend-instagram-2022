@@ -1,3 +1,10 @@
 import Authentication from "./authController";
+import PostController from './postController'
+import CommentController from './commentController'
 
-export { Authentication };
+
+export { 
+  Authentication, 
+  PostController, 
+  CommentController 
+};

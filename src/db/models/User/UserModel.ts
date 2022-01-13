@@ -143,7 +143,9 @@ const userSchema: any = new Schema(
         type: String,
         trim : true
       },
-    }
+    },
+    // posts were saved 
+    post_saved : [{ type: mongoose.Schema.ObjectId, ref: "Post" }],
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );

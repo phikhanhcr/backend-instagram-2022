@@ -67,68 +67,6 @@ class UserRepository implements ICrud {
     }
   };
 
-  public updateByGoogleId = (googleId: string, data) => {
-    try {
-      return User.findOneAndUpdate({ "google_id.google_id": googleId }, data, { new: true });
-    } catch (e) {
-      errorLog(`User::updateByGoogleId ${e.message}`);
-      return promiseNull();
-    }
-  };
-  public findByGoogleId = (googleId: string) => {
-    try {
-      return User.findOne({ "google_id.uid": googleId }, { password: 0, password_old: 0 });
-    } catch (e) {
-      errorLog(`User::findByGoogleId ${e.message}`);
-      return promiseNull();
-    }
-  };
-
-  public updateByAppleSub = (apple_sub: string, data) => {
-    try {
-      return User.findOneAndUpdate({ "apple.apple_sub": apple_sub }, data, { new: true });
-    } catch (e) {
-      errorLog(`User::updateByAppleSub ${e.message}`);
-      return promiseNull();
-    }
-  };
-
-  public findByAppleId = (appleId: string) => {
-    try {
-      return User.findOne({ "apple.apple_id": appleId }, { password: 0, password_old: 0 });
-    } catch (e) {
-      errorLog(`User::findByAppleId ${e.message}`);
-      return promiseNull();
-    }
-  };
-
-  public findByAppleSub = (apple_sub: string) => {
-    try {
-      return User.findOne({ "apple.apple_sub": apple_sub }, { password: 0, password_old: 0 });
-    } catch (e) {
-      errorLog(`User::findByAppleSub ${e.message}`);
-      return promiseNull();
-    }
-  };
-
-  public findByFacebookId = (facebookId: string) => {
-    try {
-      return User.findOne({ "facebook.uid": facebookId }, { password: 0, password_old: 0 });
-    } catch (e) {
-      errorLog(`User::findByFacebookId ${e.message}`);
-      return promiseNull();
-    }
-  };
-
-  public findByGmail = (gmail: string) => {
-    try {
-      return User.findOne({ email: gmail }, { password: 0, password_old: 0 });
-    } catch (e) {
-      errorLog(`User::findByGmail ${e.message}`);
-      return promiseNull();
-    }
-  };
-
   public findByEmail = (email: string) => {
     try {
       return User.findOne({ email }, { password: 0, password_old: 0 });
@@ -138,23 +76,8 @@ class UserRepository implements ICrud {
     }
   };
 
-  public updateGoogleId = (gmail: string, googleId: string) => {
-    try {
-      return User.findOneAndUpdate({ email: gmail }, { "google.uid": googleId }, { new: true });
-    } catch (e) {
-      errorLog(`User::updateGoogleId ${e.message}`);
-      return promiseNull();
-    }
-  };
 
-  public getPassword = (googleId: string) => {
-    try {
-      return User.findOne({ "google.uid": googleId }).select({ password: 1 });
-    } catch (e) {
-      errorLog(`User::getPassword ${e.message}`);
-      return promiseNull();
-    }
-  };
+
 
   public count = (filter: IUserFilterType) => {
     try {

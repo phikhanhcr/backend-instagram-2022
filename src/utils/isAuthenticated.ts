@@ -49,7 +49,7 @@ const isAuthenticated = async (req, res) => {
   }
 };
 
-const getUserIdFromreq = async (req) => {
+const getUserIdFromReq = async (req) => {
   try {
     let isMobileAuth = false;
     let token = '';
@@ -79,4 +79,4 @@ const getUserIdFromreq = async (req) => {
   }
 };
 
-export { isAuthenticated, getUserIdFromreq };
+export { isAuthenticated, getUserIdFromReq };

@@ -3,7 +3,21 @@ import { checkPassword, hashPassword } from './../utils/crypt';
 import jwt from "jsonwebtoken";
 import UserRepositories from '../db/repositories/UserReponsitories'
 import env from '../config/env';
+import { getUserIdFromReq, isAuthenticated } from '../utils/isAuthenticated';
 class Authentication {
+
+  public getUserByToken = async (req, res) => {
+    const check = await isAuthenticated(req, res);
+    if (check) {
+      // decode token
+      const userId = await getUserIdFromReq(req);
+      const user = await UserRepositories.get(userId);
+      return res.status(200).send({ message: "Đăng nhập thành công", user: JSON.stringify(user), status: true });
+    }
+    return res.status(500).json({ 
+      message : "Token expired, Please try again"
+    })
+  };
 
   public register = async (req, res) => {
     try {
@@ -93,17 +107,17 @@ class Authentication {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
-        return res.status(500).send({ message: "Vui lòng nhập đầy đủ thông tin !", status : "false" });
+        return res.status(500).send({ message: "Vui lòng nhập đầy đủ thông tin !", status: "false" });
       }
       const userByEmail = await UserRepositories.getPasswordByEmail(email);
       const userByUsername = await UserRepositories.getPasswordByUserName(email);
       if (!userByUsername && !userByEmail) {
-        return res.status(500).send({ message: "Tên đăng nhập hoặc mật khẩu không đúng!", status : false });
+        return res.status(500).send({ message: "Tên đăng nhập hoặc mật khẩu không đúng!", status: false });
       }
       const user = userByUsername ? userByUsername : userByEmail
       const checkPasswordInput = await checkPassword(password, user.password);
       if (!checkPasswordInput) {
-        return res.status(500).send({ message: "Có cái mật khẩu không nhớ được là sao, buddy?", status : false });
+        return res.status(500).send({ message: "Có cái mật khẩu không nhớ được là sao, buddy?", status: false });
       }
 
       req.login(user, (err) => {
@@ -114,31 +128,31 @@ class Authentication {
               _id: user._id.toString(),
               avatar: user.avatar,
               email: user.email,
-              username: user.username,
+              username: user.username ? user.username : user.email,
             },
             {
               domain: process.env.COOKIE_DOMAIN,
               maxAge: Number(process.env.COOKIE_AGE),
               httpOnly: false,
-              signed : true
+              signed: true
             }
           );
           const jsonWebToken = jwt.sign({ userID: user._id.toString() }, process.env.JWT_SECRET, {
-            expiresIn: "10s" // Number(process.env. ) / 1000,
+            expiresIn: Number(process.env.COOKIE_AGE) / 1000,
           });
           res.cookie("jwt", jsonWebToken, {
             domain: process.env.COOKIE_DOMAIN,
             httpOnly: false,
-            signed : true
+            signed: true
           });
 
-          return res.status(200).send({ message: "Đăng nhập thành công", token: jsonWebToken, user: JSON.stringify(user), status : true });
+          return res.status(200).send({ message: "Đăng nhập thành công", token: jsonWebToken, user: JSON.stringify(user), status: true });
         } else {
-          return res.status(500).send({ message: err.message, status : false });
+          return res.status(500).send({ message: err.message, status: false });
         }
       });
     } catch (err) {
-      return res.status(500).send({ message: err.message, status : false });
+      return res.status(500).send({ message: err.message, status: false });
     }
   };
 
@@ -309,8 +323,9 @@ class Authentication {
     //   res.status(500).send({ message: err.message });
     // }
   };
+
 }
 
-const AuthenticationPresenter = new Authentication();
+const AuthenticationController = new Authentication();
 
-export default AuthenticationPresenter;
+export default AuthenticationController;

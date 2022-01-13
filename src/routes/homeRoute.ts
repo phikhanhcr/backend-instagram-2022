@@ -1,8 +1,8 @@
 import { isAuthenticated } from '../utils/isAuthenticated'
 let homeRouter = (route, app) => {
 
-  route.get("/", async (req, res) => {
-    console.log(await isAuthenticated(req, res)) 
+  route.get("/home", async (req, res) => {
+
     if(await isAuthenticated(req, res))  {
       res.send({message : "oke"})
     } else {
