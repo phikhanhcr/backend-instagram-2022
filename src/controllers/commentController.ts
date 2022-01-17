@@ -58,6 +58,7 @@ class Comment {
           url: repliedUser.url,
         }
       });
+      rootComment.comment_replied_count++;
       await rootComment.save();
     }
 

@@ -40,6 +40,7 @@ class Post {
         message: "You have to login"
       })
     }
+    console.log({ userId })
     // get me 
     // get following user 
     const data = await PostRepository.getPostFollowing(userId);

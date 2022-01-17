@@ -46,7 +46,7 @@ class PostRepository implements ICrud {
 
   public get = (id: string) => {
     try {
-      return Post.findById(id);
+      return Post.findById(id).populate('userId', 'username avatar');
     } catch (e) {
       errorLog(`Post::find ${e.message}`);
       return promiseNull();
@@ -121,6 +121,7 @@ class PostRepository implements ICrud {
         // find their post
         followers.push(me)
         return Post.find({ userId: { $in: followers } })
+          .populate('userId', 'username avatar')
           .limit(20)
           .then(data => {
             return data;

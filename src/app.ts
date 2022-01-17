@@ -5,6 +5,7 @@ import { corsLoader } from './loaders/cors'
 import { configSession } from './loaders/session'
 import { initialRouter } from "./routes"
 import { Passport as PassportService } from "./utils/passport";
+
 // import { winstonConfig } from './loaders/winston'
 
 const initApp = (app) => {
@@ -22,6 +23,7 @@ const initApp = (app) => {
    
    initialRouter(app);
 }
+
 
 export {
    initApp,

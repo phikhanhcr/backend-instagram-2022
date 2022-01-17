@@ -8,14 +8,14 @@ import ConnectionDb from './db/connection';
 import { initApp } from './app'
 import env from "./config/env";
 import initSocket from './socket.io';
-
+const listEndpoints = require('express-list-endpoints')
 const server = http.createServer(app);
 const io = new Server(server);
 
 ConnectionDb.connect();
 initApp(app);
 
-
+console.log(listEndpoints(app));
 initSocket(io);
 
 server.listen(env.app.port, () => console.log(`server is running on port ${env.app.port}`));
