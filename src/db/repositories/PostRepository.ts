@@ -46,18 +46,21 @@ class PostRepository implements ICrud {
 
   public get = (id: string) => {
     try {
-      return Post.findById(id).populate('userId', 'username avatar');
+      return Post
+        .findById(id).populate('userId', 'username avatar')
+        .then(data => data)
+        .catch(e => console.log(e))
     } catch (e) {
-      errorLog(`Post::find ${e.message}`);
+      // errorLog(`Post::find ${e.message}`);
       return promiseNull();
     }
   };
 
   public getMyPost = (id: string) => {
     try {
-      return Post.find({ userId : id });
+      return Post.find({ userId: id });
     } catch (e) {
-      errorLog(`Post::find ${e.message}`);
+      // errorLog(`Post::find ${e.message}`);
       return promiseNull();
     }
   };
@@ -66,11 +69,11 @@ class PostRepository implements ICrud {
   public getByType = (data: any) => {
     try {
       return Post.find({
-        userId : data.userId,
-        type : data.type
+        userId: data.userId,
+        type: data.type
       })
     } catch (e) {
-      errorLog(`Post::find ${e.message}`);
+      // errorLog(`Post::find ${e.message}`);
       return promiseNull();
     }
   };
@@ -123,19 +126,20 @@ class PostRepository implements ICrud {
         return Post.find({ userId: { $in: followers } })
           .populate('userId', 'username avatar')
           .limit(20)
+          .sort({"created_at": -1})
           .then(data => {
             return data;
           }).catch(e => {
-            errorLog(`Post::find ${e.message}`);
+            // errorLog(`Post::find ${e.message}`);
             return promiseNull();
           })
       }).catch(e => {
-        errorLog(`Post::find ${e.message}`);
+        // errorLog(`Post::find ${e.message}`);
         return promiseNull();
       })
 
     } catch (e) {
-      errorLog(`Post::find ${e.message}`);
+      // errorLog(`Post::find ${e.message}`);
       return promiseNull();
     }
   }

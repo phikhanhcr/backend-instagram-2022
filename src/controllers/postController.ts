@@ -22,9 +22,10 @@ class Post {
       tags: tags ? tags : [],
       type: type ? type : "post",
       with_other: with_other ? with_other : [],
-      userId,
+      userId
     });
-    return res.status(200).json(data);
+    const findData = await PostRepository.get(data._id);
+    return res.status(200).json(findData);
   }
 
   public getPostNewFeed = async (req, res) => {
@@ -40,7 +41,6 @@ class Post {
         message: "You have to login"
       })
     }
-    console.log({ userId })
     // get me 
     // get following user 
     const data = await PostRepository.getPostFollowing(userId);
@@ -64,8 +64,12 @@ class Post {
         message: "You have to login"
       })
     }
-    const specificPost = await PostRepository.get(req.params.post_id)
-    return res.status(200).json(specificPost);
+    const postId = req.params.post_id
+    if (postId.match(/^[0-9a-fA-F]{24}$/)) {
+      const specificPost = await PostRepository.get(postId)
+      return res.status(200).json(specificPost);
+    }
+
   }
 
   public getPostByType = async (req, res) => {

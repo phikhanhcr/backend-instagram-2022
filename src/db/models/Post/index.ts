@@ -45,6 +45,7 @@ const postSchema: any = new Schema(
       url: { type: String }
     }],
     comment_count: { type: Number, default: 0 },
+    allow_comment : { type: Boolean, default: true },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );

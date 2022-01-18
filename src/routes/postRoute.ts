@@ -3,7 +3,7 @@ import { PostController } from '../controllers';
 let postRouter = (route, app) => {
 
   // create post 
-  route.post("/post", PostController.createPost)
+  route.post("/post/create", PostController.createPost)
 
   // get post on new feeds
   route.get("/post/feeds", PostController.getPostNewFeed)
