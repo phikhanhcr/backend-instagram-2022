@@ -45,7 +45,7 @@ const commentSchema: any = new Schema(
     // reply_to comment id, if === "" => comment lv1, if not, comment lv2
     // filter lv1
     reply_to: { // reply to comment _id
-      type: String,
+      type: mongoose.Schema.ObjectId, ref: "User",
       required: false
     },
 

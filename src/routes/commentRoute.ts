@@ -11,7 +11,7 @@ let commentRouter = (route, app) => {
 
   // create comment
   // oke
-  route.post("/comment", CommentController.createComment)
+  route.post("/comment/create", CommentController.createComment)
 
 
   return app.use("/api", route);

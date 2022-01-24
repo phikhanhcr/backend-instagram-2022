@@ -126,7 +126,7 @@ class PostRepository implements ICrud {
         return Post.find({ userId: { $in: followers } })
           .populate('userId', 'username avatar')
           .limit(20)
-          .sort({"created_at": -1})
+          .sort({"created_at": 1})
           .then(data => {
             return data;
           }).catch(e => {

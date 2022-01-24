@@ -34,7 +34,7 @@ class Comment {
       username: currentUser.username,
       avatar: currentUser.avatar,
       content,
-      reply_to: reply_to ? reply_to : "",
+      reply_to: reply_to ? reply_to : null,
     })
 
     // comment level 2;
@@ -55,17 +55,17 @@ class Comment {
         reply_to: {
           user_id: reply_to,
           username: repliedUser.username,
-          url: repliedUser.url,
         }
       });
       rootComment.comment_replied_count++;
       await rootComment.save();
     }
-
-    return res.status(200).send("oke")
+    const dataCommentReturn = await CommentRepository.get(newComment._id);
+    return res.status(200).json(dataCommentReturn)
   }
 
-  public getCommentByPost =  async (req, res) => {
+  public getCommentByPost = async (req, res) => {
+
     const data = await CommentRepository.getCommentLv1({
       post_id: req.params.post_id,
     });
@@ -78,9 +78,11 @@ class Comment {
     });
     let newData = [];
 
-    for(let i = 0; i < data.length ; i++ ) {
+    for (let i = 0; i < data.length; i++) {
       const comment = await CommentRepository.get(data[i].comment_id);
       newData.push({
+        comment_id: data[i]._id,
+        user_id: data[i].user_id,
         content: comment.content,
         username: data[i].username,
         avatar: data[i].avatar,

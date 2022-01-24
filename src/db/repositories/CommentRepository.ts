@@ -42,7 +42,7 @@ class CommentRepository implements ICrud {
 
   public get = (id: string) => {
     try {
-      return Comment.findById(id);
+      return Comment.findById(id).populate('reply_to', 'username');
     } catch (e) {
       errorLog(`Comment::find ${e.message}`);
       return promiseNull();
@@ -87,8 +87,8 @@ class CommentRepository implements ICrud {
     try {
       return Comment.find({
         post_id: data.post_id,
-        reply_to: { $eq: "" }
-      }, { comment_replied : 0})
+        reply_to: { $eq: null }
+      }).populate('comment_replied.comment_id', 'content')
         .then((data) => {
           return data;
         });
