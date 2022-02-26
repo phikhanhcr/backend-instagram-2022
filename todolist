@@ -2,3 +2,22 @@
 authentication
 
 route comment
+
+
+Day 20-02-2022
+  - Notification Backend CURD
+Day 21-02-2022
+  - Notification Front-end
+
+
+
+comment realtime, 
+
+all user will receive this comment 
+
+the post's author will be received a Notification
+{
+  link,
+  type : comment,
+  user: comment
+}

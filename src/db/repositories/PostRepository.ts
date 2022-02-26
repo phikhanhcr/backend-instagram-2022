@@ -56,7 +56,7 @@ class PostRepository implements ICrud {
     }
   };
 
-  public getMyPost = (id: string) => {
+  public getPostsFromUserId = (id: string) => {
     try {
       return Post.find({ userId: id });
     } catch (e) {

@@ -16,9 +16,9 @@ let postRouter = (route, app) => {
   // oke
   route.get("/post/type/:type", PostController.getPostByType)
 
-  // get my post 
+  // get post by user id
   // oke
-  route.get("/post/my-post", PostController.getMyPost)
+  route.post("/post/posts/user", PostController.getPostByUserId)
 
   // update my post
 

@@ -132,13 +132,13 @@ class Authentication {
             },
             {
               domain: process.env.COOKIE_DOMAIN,
-              maxAge: Number(process.env.COOKIE_AGE),
+              maxAge: 86400,
               httpOnly: false,
               signed: true
             }
           );
           const jsonWebToken = jwt.sign({ userID: user._id.toString() }, process.env.JWT_SECRET, {
-            expiresIn: Number(process.env.COOKIE_AGE) / 1000,
+            expiresIn: "24h",
           });
           res.cookie("jwt", jsonWebToken, {
             domain: process.env.COOKIE_DOMAIN,

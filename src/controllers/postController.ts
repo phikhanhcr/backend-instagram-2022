@@ -87,7 +87,6 @@ class Post {
     }
 
     // view others post
-
     const { user_id } = req.body;
 
     const specificPost = await PostRepository.getByType({
@@ -97,8 +96,9 @@ class Post {
     return res.status(200).json(specificPost);
   }
 
-  public getMyPost =  async (req, res) => {
+  public getPostByUserId = async (req, res) => {
     // get post by userId
+    console.log("body", req.body)
     if (! await isAuthenticated(req, res)) {
       return res.status(500).send({
         message: "You have to login"
@@ -111,10 +111,12 @@ class Post {
       })
     }
 
-    const myPost = await PostRepository.getMyPost(userId);
-    return res.status(200).json(myPost);
-
+    const data = await PostRepository.getPostsFromUserId(req.body.userId ? req.body.userId : userId);
+    console.log({ data })
+    return res.status(200).json(data);
   }
+
+
 }
 
 const PostController = new Post();

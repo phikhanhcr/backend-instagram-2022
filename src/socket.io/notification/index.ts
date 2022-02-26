@@ -1,0 +1,121 @@
+import { NotificationRepository, PostRepository } from '../../db/repositories'
+import NotificationModel from '../../db/models/Notification';
+const addUser = (clients, userID, socketId) => {
+  if (clients[userID]) {
+    clients[userID].push(socketId);
+  } else {
+    clients[userID] = [socketId];
+  }
+}
+
+const removeUser = (clients, userID, socketId) => {
+  if (clients[userID]) {
+    clients[userID] = clients[userID].filter(e => e !== socketId);
+  }
+
+  if (!clients[userID].length) {
+    delete clients[userID]
+  }
+}
+
+let notificationSocket = io => {
+  let clients = {};
+  let currentUserId;
+
+  io.on('connection', socket => {
+    // get userId
+    socket.on("user-init", (data) => {
+      console.log(data)
+      currentUserId = data._id;
+      addUser(clients, data._id, socket.id);
+
+      socket.on("disconnect", () => {
+        removeUser(clients, data._id, socket.id);
+      })
+    })
+
+    socket.on("notify-comment_on_post", async (data) => {
+
+      const post = await PostRepository.get(data.post_id);
+      const newNotification = await NotificationRepository.create({
+        sender: data.user_commented_id,
+        receiver: post.userId._id,
+        type: "comment",
+        root_content: post._id,
+        images: post.images[0]
+      })
+      const specificNotify = await NotificationModel.findById(newNotification._id).lean();
+
+      console.log({ specificNotify })
+      if (clients[post.userId._id] && (data.user_commented_id != post.userId._id)) {
+        clients[post.userId._id].forEach(e => {
+          io.to(e).emit("response-notify-send_notify", specificNotify);
+        });
+      }
+    })
+
+    socket.on("notify-comment_replied_on_post", async (data) => {
+
+      // user A, user B, user C
+      // user A owner
+      // user B replied user A 
+      // => user A will be received a notify, => user B tagged u on a comment
+      const post = await PostRepository.get(data.post_id);
+      if (post.userId._id.toString() === data.reply_to._id.toString()) {
+
+        const newNotification = await NotificationRepository.create({
+          sender: data.user_commented_id,
+          receiver: post.userId._id,
+          type: "mentioned",
+          root_content: post._id,
+          images: post.images[0]
+        })
+        const specificNotify = await NotificationModel.findById(newNotification._id).populate("sender", "username avatar").lean()
+
+        if (clients[post.userId._id] && (data.user_commented_id != post.userId._id)) {
+          clients[post.userId._id].forEach(e => {
+            io.to(e).emit("response-notify-comment_replied_on_post", specificNotify);
+          });
+        }
+      } else {
+
+        // user B replied user C on userA's post
+        // => user A will be received a notify, somebody comment on my post
+        // => user C will be received a notify, somebody tagged u on a comment on userA's post       
+        
+        const newNotificationSendAuthor = await NotificationRepository.create({
+          sender: data.user_commented_id,
+          receiver: post.userId._id,
+          type: "comment",
+          root_content: post._id,
+          images: post.images[0]
+        })
+        const specificNotify = await NotificationModel.findById(newNotificationSendAuthor._id).populate("sender", "username avatar").lean()
+        if (clients[post.userId._id] && (data.user_commented_id != post.userId._id)) {
+          clients[post.userId._id].forEach(e => {
+            io.to(e).emit("response-notify-comment_replied_on_post", specificNotify);
+          });
+        }
+
+        const newNotificationSendRootComment = await NotificationRepository.create({
+          sender: data.user_commented_id,
+          receiver: data.reply_to._id,
+          type: "mentioned",
+          root_content: post._id,
+          images: post.images[0]
+        })
+
+        if (clients[data.reply_to._id]) {
+          const specificNotifySendRootComment = await NotificationModel.findById(newNotificationSendRootComment._id).populate("sender", "username avatar").lean()
+          clients[data.reply_to._id].forEach(e => {
+            io.to(e).emit("response-notify-comment_replied_on_post", specificNotifySendRootComment);
+          });
+        }
+      }
+    })
+  });
+}
+
+export default notificationSocket;
+
+

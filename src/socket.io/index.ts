@@ -1,8 +1,8 @@
+import notificationSocket from "./notification";
+
 let initSocket = io => {
-  // io.on('connection', client => {
-  //   client.on('event', data => { /* … */ });
-  //   client.on('disconnect', () => { /* … */ });
-  // });
+  notificationSocket(io);
+  
 }
 
 export default initSocket;

@@ -26,9 +26,9 @@ const isAuthenticated = async (req, res) => {
     let jwt = {
       exp: 0,
     };
-    
+
     if (!isMobileAuth) {
-      jwt = await jsonwebtoken.verify(req.cookies.jwt, process.env.JWT_SECRET);
+      jwt = await jsonwebtoken.verify(req.signedCookies.jwt, process.env.JWT_SECRET);
     } else {
       jwt = await jsonwebtoken.verify(token, process.env.JWT_SECRET);
     }
@@ -79,4 +79,19 @@ const getUserIdFromReq = async (req) => {
   }
 };
 
-export { isAuthenticated, getUserIdFromReq };
+const checkAuthenticationAndReturnUserId = async (req, res) => {
+  if (! await isAuthenticated(req, res)) {
+    return res.status(500).send({
+      message: "You have to login"
+    })
+  }
+  const userId = await getUserIdFromReq(req);
+  if (!userId) {
+    return res.status(500).send({
+      message: "You have to login"
+    })
+  }
+  return userId;
+}
+
+export { isAuthenticated, getUserIdFromReq, checkAuthenticationAndReturnUserId };

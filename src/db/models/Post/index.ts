@@ -24,6 +24,8 @@ const postSchema: any = new Schema(
       type: String,
       trim: true
     }],
+
+    // saved and tagged wil
     type : {
       type : String,
       enum : ['reels', 'post', 'video'],
