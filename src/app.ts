@@ -15,11 +15,11 @@ const initApp = (app) => {
 
    helmetLoader(app);
    
-   configSession(app);
+   // configSession(app);
    
    corsLoader(app);
 
-   PassportService(app);
+   // PassportService(app);
    
    initialRouter(app);
 }

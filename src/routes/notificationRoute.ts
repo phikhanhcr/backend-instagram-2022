@@ -1,22 +1,22 @@
-import { checkAuthenticationAndReturnUserId } from '../utils/isAuthenticated'
 import { NotificationRepository, UserRepository } from '../db/repositories'
+import { checkAuthentication } from '../middleware/checkAuthentication'
 
 let notificationRouter = (route, app) => {
 
-  route.get("/notification", async (req, res) => {
-    const userId = await checkAuthenticationAndReturnUserId(req, res);
+  route.get("/notification", checkAuthentication, async (req, res) => {
+    const userId = req.user;
     const data = await NotificationRepository.getMyNotify(userId);
     return res.status(200).json(data)
   })
 
-  route.delete("/notification", async (req, res) => {
-    const userId = await checkAuthenticationAndReturnUserId(req, res);
+  route.delete("/notification", checkAuthentication, async (req, res) => {
+    const userId = req.user;
     const data = await NotificationRepository.deleteAll(userId);
     return res.status(200).json(data)
   })
 
-  route.post("/notification", async (req, res) => {
-    const userId = await checkAuthenticationAndReturnUserId(req, res);
+  route.post("/notification", checkAuthentication, async (req, res) => {
+    const userId = req.user;
     const { receiver, type, rootContent } = req.body;
     const receiverUser = await UserRepository.get(receiver);
 
@@ -32,16 +32,16 @@ let notificationRouter = (route, app) => {
       type,
       rootContent: rootContent ? rootContent : null
     })
-
+    // @ts-ignore
     const returnNotify = await NotificationRepository.get(newNotification._id);
     return res.status(200).json(returnNotify)
 
   })
 
 
-  route.post("/notification/markAllRead", async (req, res) => {
+  route.post("/notification/markAllRead", checkAuthentication, async (req, res) => {
 
-    const userId = await checkAuthenticationAndReturnUserId(req, res);
+    const userId = req.user;
     await NotificationRepository.markAllRead(userId);
     return res.status(200).json({ message: "oke" })
 

@@ -1,37 +1,19 @@
+// @ts-nocheck
 import { NotificationRepository, PostRepository } from '../../db/repositories'
 import NotificationModel from '../../db/models/Notification';
-const addUser = (clients, userID, socketId) => {
-  if (clients[userID]) {
-    clients[userID].push(socketId);
-  } else {
-    clients[userID] = [socketId];
-  }
-}
-
-const removeUser = (clients, userID, socketId) => {
-  if (clients[userID]) {
-    clients[userID] = clients[userID].filter(e => e !== socketId);
-  }
-
-  if (!clients[userID].length) {
-    delete clients[userID]
-  }
-}
+import { addUser, removeUser } from '../../utils/socketUser'
 
 let notificationSocket = io => {
   let clients = {};
-  let currentUserId;
 
   io.on('connection', socket => {
     // get userId
     socket.on("user-init", (data) => {
-      console.log(data)
-      currentUserId = data._id;
       addUser(clients, data._id, socket.id);
 
-      socket.on("disconnect", () => {
-        removeUser(clients, data._id, socket.id);
-      })
+    })
+    socket.on("disconnect", () => {
+      removeUser(clients, socket.currentUserId, socket.id);
     })
 
     socket.on("notify-comment_on_post", async (data) => {

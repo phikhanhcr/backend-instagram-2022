@@ -1,20 +1,11 @@
 import { PostRepository } from "../db/repositories"
-import { getUserIdFromReq, isAuthenticated } from '../utils/isAuthenticated';
 class Post {
 
   public createPost = async (req, res) => {
     const { description, images, tags, type, with_other } = req.body;
-    if (! await isAuthenticated(req, res)) {
-      return res.status(500).send({
-        message: "You have to login"
-      })
-    }
-    const userId = await getUserIdFromReq(req);
-    if (!userId) {
-      return res.status(500).send({
-        message: "You have to login"
-      })
-    }
+  
+    const userId = req.user;
+   
     // get following user 
     const data = await PostRepository.create({
       description: description ? description : "",
@@ -29,19 +20,7 @@ class Post {
   }
 
   public getPostNewFeed = async (req, res) => {
-    if (! await isAuthenticated(req, res)) {
-      return res.status(500).send({
-        message: "You have to login"
-      })
-    }
-
-    const userId = await getUserIdFromReq(req);
-    if (!userId) {
-      return res.status(500).send({
-        message: "You have to login"
-      })
-    }
-    // get me 
+    const userId = req.user;
     // get following user 
     const data = await PostRepository.getPostFollowing(userId);
     return res.status(200).json(data);
@@ -53,17 +32,6 @@ class Post {
 
   public getSpecificPost = async (req, res) => {
     // get post by userId
-    if (! await isAuthenticated(req, res)) {
-      return res.status(500).send({
-        message: "You have to login"
-      })
-    }
-    const userId = await getUserIdFromReq(req);
-    if (!userId) {
-      return res.status(500).send({
-        message: "You have to login"
-      })
-    }
     const postId = req.params.post_id
     if (postId.match(/^[0-9a-fA-F]{24}$/)) {
       const specificPost = await PostRepository.get(postId)
@@ -74,18 +42,7 @@ class Post {
 
   public getPostByType = async (req, res) => {
     // get post by userId
-    if (! await isAuthenticated(req, res)) {
-      return res.status(500).send({
-        message: "You have to login"
-      })
-    }
-    const userId = await getUserIdFromReq(req);
-    if (!userId) {
-      return res.status(500).send({
-        message: "You have to login"
-      })
-    }
-
+    const userId = req.user;
     // view others post
     const { user_id } = req.body;
 
@@ -98,21 +55,9 @@ class Post {
 
   public getPostByUserId = async (req, res) => {
     // get post by userId
-    console.log("body", req.body)
-    if (! await isAuthenticated(req, res)) {
-      return res.status(500).send({
-        message: "You have to login"
-      })
-    }
-    const userId = await getUserIdFromReq(req);
-    if (!userId) {
-      return res.status(500).send({
-        message: "You have to login"
-      })
-    }
+    const userId = req.user;
 
     const data = await PostRepository.getPostsFromUserId(req.body.userId ? req.body.userId : userId);
-    console.log({ data })
     return res.status(200).json(data);
   }
 

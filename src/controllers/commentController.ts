@@ -1,24 +1,11 @@
 import { CommentRepository, PostRepository, UserRepository } from "../db/repositories"
-import { getUserIdFromReq, isAuthenticated } from '../utils/isAuthenticated';
 
 class Comment {
 
   public createComment = async (req, res) => {
     const { post_id, content, reply_to, comment_root_id } = req.body;
     // check user send request for writing a comment
-    if (! await isAuthenticated(req, res)) {
-      return res.status(500).send({
-        message: "You have to login"
-      })
-    }
-
-    const userId = await getUserIdFromReq(req);
-    if (!userId) {
-      return res.status(500).send({
-        message: "You have to login"
-      })
-    }
-
+    const userId = req.user;
     const currentUser = await UserRepository.get(userId);
 
     const checkPost = await PostRepository.get(post_id);
