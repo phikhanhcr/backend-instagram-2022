@@ -62,6 +62,37 @@ class Post {
   }
 
 
+  public likePost = async (req, res) => {
+    const { post_id } = req.body;
+    const userId = req.user;
+    const targetPost = await PostRepository.checkLikeOrNot(post_id, userId);
+    if (targetPost.length > 0) {
+      return res.status(400).json({ msg: "You liked this user." });
+    } else {
+      const checkPost = await PostRepository.get(post_id);
+      checkPost.like_count++;
+      checkPost.like_list.push(userId);
+      await checkPost.save();
+      return res.status(200).json({ msg: "oke", action: "like" });
+    }
+  }
+
+  public unlikePost = async (req, res) => {
+    const { post_id } = req.body;
+    const userId = req.user;
+    const targetPost = await PostRepository.checkLikeOrNot(post_id, userId);
+
+    if (targetPost.length > 0) {
+      targetPost[0].like_count--;
+      targetPost[0].like_list = targetPost[0].like_list.filter(ele => ele.toString() !== userId);
+      await targetPost[0].save();
+      return res.status(200).json({ msg: "oke", action: "unlike" });
+    } else {
+      return res.status(400).json({ msg: "You have not liked this user yet!!!" });
+    }
+  }
+
+
 }
 
 const PostController = new Post();

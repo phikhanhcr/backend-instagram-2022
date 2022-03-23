@@ -6,7 +6,7 @@ let authRouter = (route, app) => {
   route.post("/get-user", checkAuthentication, Authentication.getUserByToken)
   route.post("/get-access-token", Authentication.getAccessToken)
 
-  return app.use("/api", route);
+  return app.use("/api", route) 
 }
 
 export {

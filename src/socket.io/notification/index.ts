@@ -28,7 +28,6 @@ let notificationSocket = io => {
       })
       const specificNotify = await NotificationModel.findById(newNotification._id).lean();
 
-      console.log({ specificNotify })
       if (clients[post.userId._id] && (data.user_commented_id != post.userId._id)) {
         clients[post.userId._id].forEach(e => {
           io.to(e).emit("response-notify-send_notify", specificNotify);
