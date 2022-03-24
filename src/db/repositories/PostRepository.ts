@@ -47,7 +47,9 @@ class PostRepository implements ICrud {
   public get = (id: string) => {
     try {
       return Post
-        .findById(id).populate('userId', 'username avatar')
+        .findById(id)
+        .populate('userId', 'username avatar')
+        .populate("like_list", 'username avatar')
         .then(data => data)
         .catch(e => console.log(e))
     } catch (e) {

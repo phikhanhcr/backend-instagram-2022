@@ -2,9 +2,9 @@
 import { NotificationRepository, PostRepository } from '../../db/repositories'
 import NotificationModel from '../../db/models/Notification';
 import { addUser, removeUser } from '../../utils/socketUser'
+export let clients = {};
 
 let notificationSocket = io => {
-  let clients = {};
 
   io.on('connection', socket => {
     // get userId
@@ -63,7 +63,7 @@ let notificationSocket = io => {
         // user B replied user C on userA's post
         // => user A will be received a notify, somebody comment on my post
         // => user C will be received a notify, somebody tagged u on a comment on userA's post       
-        
+
         const newNotificationSendAuthor = await NotificationRepository.create({
           sender: data.user_commented_id,
           receiver: post.userId._id,
@@ -94,6 +94,27 @@ let notificationSocket = io => {
         }
       }
     })
+
+    socket.on("handle-post-like", async (data) => {
+      const { receiver, rootContent, sender } = data;
+      const post = await PostRepository.get(data.rootContent._id);
+
+      const newNotification = await NotificationRepository.create({
+        sender: sender,
+        receiver,
+        type: "like",
+        root_content: rootContent._id,
+        images: rootContent.images[0]
+      })
+
+      const specificNotify = await NotificationModel.findById(newNotification._id).populate("sender", 'username avatar').lean();
+      if (clients[rootContent.userId._id] && (sender != rootContent.userId._id)) {
+        clients[rootContent.userId._id].forEach(e => {
+          io.to(e).emit("response-notify-send_notify", specificNotify);
+        });
+      }
+    })
+
   });
 }
 
