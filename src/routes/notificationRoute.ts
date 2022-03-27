@@ -47,6 +47,19 @@ let notificationRouter = (route, app) => {
 
   })
 
+  route.post("/notification/check-new", checkAuthentication, async (req, res) => {
+
+    const userId = req.user;
+    const data = await NotificationRepository.checkNewNotify(userId);
+    if(data) {
+      return res.status(200).json({ data : true })
+    } else {
+      return res.status(200).json({ data : false })
+    }
+
+  })
+
+
   return app.use("/api", route);
 }
 

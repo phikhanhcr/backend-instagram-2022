@@ -97,7 +97,6 @@ let notificationSocket = io => {
 
     socket.on("handle-post-like", async (data) => {
       const { receiver, rootContent, sender } = data;
-      const post = await PostRepository.get(data.rootContent._id);
 
       const newNotification = await NotificationRepository.create({
         sender: sender,
@@ -113,6 +112,13 @@ let notificationSocket = io => {
           io.to(e).emit("response-notify-send_notify", specificNotify);
         });
       }
+    })
+
+    socket.on("handle-post-unlike", async (data) => {
+      const { receiver, rootContent, sender } = data;
+      // remove notification
+      const check = await NotificationRepository.removeNotify(rootContent._id, receiver, sender, "like");
+      console.log({ check })
     })
 
   });
