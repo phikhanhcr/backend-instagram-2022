@@ -1,11 +1,12 @@
+import { clients } from './../socket.io/notification/index';
 import { PostRepository } from "../db/repositories"
 class Post {
 
   public createPost = async (req, res) => {
     const { description, images, tags, type, with_other } = req.body;
-  
+
     const userId = req.user;
-   
+
     // get following user 
     const data = await PostRepository.create({
       description: description ? description : "",
@@ -32,7 +33,7 @@ class Post {
 
   public getSpecificPost = async (req, res) => {
     // get post by userId
-    const postId = req.params.post_id
+    const postId = req.params.post_id;
     if (postId.match(/^[0-9a-fA-F]{24}$/)) {
       const specificPost = await PostRepository.get(postId)
       return res.status(200).json(specificPost);
@@ -56,9 +57,40 @@ class Post {
   public getPostByUserId = async (req, res) => {
     // get post by userId
     const userId = req.user;
-
     const data = await PostRepository.getPostsFromUserId(req.body.userId ? req.body.userId : userId);
     return res.status(200).json(data);
+  }
+
+
+  public likePost = async (req, res) => {
+    const { post_id } = req.body;
+    const userId = req.user;
+    const targetPost = await PostRepository.checkLikeOrNot(post_id, userId);
+    if (targetPost.length > 0) {
+      return res.status(400).json({ msg: "You liked this user." });
+    } else {
+      const checkPost = await PostRepository.get(post_id);
+      checkPost.like_count++;
+      checkPost.like_list.push(userId);
+      await checkPost.save();
+      return res.status(200).json({ msg: "oke", action: "like" });
+    }
+  }
+
+  public unlikePost = async (req, res) => {
+    const { post_id } = req.body;
+    const userId = req.user;
+    const targetPost = await PostRepository.checkLikeOrNot(post_id, userId);
+
+    if (targetPost.length > 0) {
+      targetPost[0].like_count--;
+      targetPost[0].like_list = targetPost[0].like_list.filter(ele => ele.toString() !== userId);
+      await targetPost[0].save();
+
+      return res.status(200).json({ msg: "oke", action: "unlike" });
+    } else {
+      return res.status(400).json({ msg: "You have not liked this user yet!!!" });
+    }
   }
 
 

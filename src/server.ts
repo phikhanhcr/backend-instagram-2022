@@ -21,6 +21,8 @@ ConnectionDb.connect();
 initApp(app);
 
 // console.log(listEndpoints(app));
+app.set("io", io);
+
 
 initSocket(io);
 

@@ -47,7 +47,9 @@ class PostRepository implements ICrud {
   public get = (id: string) => {
     try {
       return Post
-        .findById(id).populate('userId', 'username avatar')
+        .findById(id)
+        .populate('userId', 'username avatar')
+        .populate("like_list", 'username avatar')
         .then(data => data)
         .catch(e => console.log(e))
     } catch (e) {
@@ -112,6 +114,20 @@ class PostRepository implements ICrud {
     }
   };
 
+  public checkLikeOrNot = (postId, userId) => {
+    try {
+      return Post.find({
+        _id: postId,
+        like_list: { $in: [userId] },
+      }).then((data) => {
+        return data;
+      });
+    } catch (e) {
+      errorLog(`Post::getAllData ${e.message}`);
+      return promiseNull();
+    }
+  };
+
   // show up on new feeds
   public getPostFollowing = (me: string) => {
     try {
@@ -125,8 +141,9 @@ class PostRepository implements ICrud {
         followers.push(me)
         return Post.find({ userId: { $in: followers } })
           .populate('userId', 'username avatar')
+          .populate("like_list", 'username avatar')
           .limit(20)
-          .sort({"created_at": 1})
+          .sort({ "created_at": 1 })
           .then(data => {
             return data;
           }).catch(e => {

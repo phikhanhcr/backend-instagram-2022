@@ -26,10 +26,10 @@ const postSchema: any = new Schema(
     }],
 
     // saved and tagged wil
-    type : {
-      type : String,
-      enum : ['reels', 'post', 'video'],
-      default : "post"
+    type: {
+      type: String,
+      enum: ['reels', 'post', 'video'],
+      default: "post"
     },
     with_other: [{
       userId: { type: mongoose.Schema.ObjectId, ref: "User" },
@@ -41,13 +41,10 @@ const postSchema: any = new Schema(
     // like and comment
     like_count: { type: Number, default: 0 },
     like_list: [{
-      userId: { type: mongoose.Schema.ObjectId, ref: "User" },
-      username: { type: String },
-      avatar: { type: String },
-      url: { type: String }
+      type: mongoose.Schema.ObjectId, ref: "User"
     }],
     comment_count: { type: Number, default: 0 },
-    allow_comment : { type: Boolean, default: true },
+    allow_comment: { type: Boolean, default: true },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );

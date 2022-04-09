@@ -1,5 +1,5 @@
 import { PostController } from '../controllers';
-import { checkAuthentication } from '../middleware/checkAuthentication'
+import { checkAuthentication } from '../middleware/checkAuthentication';
 let postRouter = (route, app) => {
 
   // create post 
@@ -25,6 +25,10 @@ let postRouter = (route, app) => {
   // delete my post
 
   // like :v 
+  route.post("/post/like", checkAuthentication, PostController.likePost)
+
+  // unlike :v 
+  route.post("/post/unlike", checkAuthentication, PostController.unlikePost)
 
   // report other post
 

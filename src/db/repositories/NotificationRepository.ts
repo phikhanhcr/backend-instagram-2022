@@ -3,23 +3,6 @@ import { promiseNull } from "../../utils/rowRecord";
 import { ICrud } from "../contracts/ICrud";
 import Notification from "../models/Notification";
 
-interface INotificationFilterType {
-  user_id?: string;
-  ids?: string,
-}
-
-const getCondition = (filter: INotificationFilterType) => {
-  let condition = {};
-  if (filter.user_id) {
-    condition = Object.assign(condition, { user_id: filter.user_id });
-  }
-
-  if (filter.ids) {
-    condition = Object.assign(condition, { _id: filter.ids });
-  }
-
-  return condition;
-};
 
 class NotificationRepository implements ICrud {
   public create = (data: any) => {
@@ -58,6 +41,19 @@ class NotificationRepository implements ICrud {
     try {
       return Notification.find({ receiver: id })
         .populate('sender', 'avatar username')
+        .sort({ "created_at": -1 })
+        .then((data) => {
+          return data;
+        });
+    } catch (e) {
+      errorLog(`Notification::find ${e.message}`);
+      return promiseNull();
+    }
+  };
+
+  public checkNewNotify = (id: string) => {
+    try {
+      return Notification.findOne({ receiver: id, seen : false })
         .then((data) => {
           return data;
         });
@@ -97,20 +93,19 @@ class NotificationRepository implements ICrud {
     }
   };
 
-  // public count = (filter: INotificationFilterType) => {
-  //   try {
-  //     const condition = getCondition(filter);
-  //     if (JSON.stringify(condition) === JSON.stringify({})) {
-  //       return Notification.estimatedDocumentCount();
-  //     } else {
-  //       return Notification.countDocuments(condition);
-  //     }
-  //   } catch (e) {
-  //     errorLog(`Notification::count ${e.message}`);
-  //     return promiseNull();
-  //   }
-  // };
-
+  public removeNotify = (root_content: string, receiver: string, sender: string, type : string) => {
+    try {
+      return Notification.findOneAndDelete({
+        receiver,
+        sender,
+        root_content,
+        type
+      })
+    } catch (e) {
+      errorLog(`Post::delete ${e.message}`);
+      return promiseNull();
+    }
+  };
 
 
 }
