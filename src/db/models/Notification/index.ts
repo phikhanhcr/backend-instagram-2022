@@ -33,7 +33,7 @@ const NotificationSchema = new Schema(
   }
 );
 
-
+NotificationSchema.index({ receiver: 1 })
 const NotificationModel = mongoose.model("Notification", NotificationSchema);
 
 export default NotificationModel;
