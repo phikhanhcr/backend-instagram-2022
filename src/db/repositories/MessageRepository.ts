@@ -44,7 +44,7 @@ class MessageRepository {
       return Message.find({
         conversationId: conversationId
       })
-      .limit(2)
+      .limit(10)
       .sort({ created_at: -1 })
     } catch (error) {
       console.log({ error })

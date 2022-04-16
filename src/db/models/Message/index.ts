@@ -21,6 +21,10 @@ const MessageSchema = new Schema(
       type: String,
       default: "",
     },
+    reaction: {
+      type : Boolean,
+      default : false
+    },
     seen: {
       type: Boolean,
       default: false,

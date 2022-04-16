@@ -3,12 +3,13 @@ const Schema = mongoose.Schema;
 
 const ConversationSchema = new Schema(
   {
-    name: String,
+    name: { type: String },
     memberCount: { type: Number, default: 2, min: 2 },
     members: [{
       type: Schema.Types.ObjectId,
       ref: 'User',
     }],
+    avatar : { type: String, default : "http://criticdaily.com/uploads/user-group/default_group.png" },
     messageCount: { type: Number, default: 0 },
     isOnline: { type: Boolean, default: false }
   },

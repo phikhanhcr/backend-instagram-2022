@@ -43,7 +43,7 @@ class ConversationRepository {
     try {
       return Conversation.find({
         members: { $in: [userId] },
-      })
+      }).populate("members", 'username avatar')
     } catch (error) {
       console.log({ error })
     }
