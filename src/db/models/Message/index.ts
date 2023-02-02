@@ -8,12 +8,23 @@ const MessageSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    receiver: {
+    conversationId: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Conversation',
     },
-    file: { type: Buffer },
-    message: String,
+    file: {
+      data: { type: Buffer },
+      contentType: { type: String },
+      fileName: { type: String }
+    },
+    message: {
+      type: String,
+      default: "",
+    },
+    reaction: {
+      type : Boolean,
+      default : false
+    },
     seen: {
       type: Boolean,
       default: false,
@@ -22,6 +33,8 @@ const MessageSchema = new Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );
 
+// MessageSchema.index({ sender: 1})
+MessageSchema.index({ conversationId: 1})
 const MessageModel = mongoose.model("Message", MessageSchema);
 
 export default MessageModel;

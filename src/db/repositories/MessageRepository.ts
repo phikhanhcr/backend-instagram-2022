@@ -1,78 +1,78 @@
 import { errorLog } from "../../utils/logger";
 import { promiseNull } from "../../utils/rowRecord";
-import { ICrud } from "../contracts/ICrud";
-import Comment from "../models/Comment";
+import Message from "../models/Message";
 
-interface ICommentFilterType {
-  post_id?: string;
-  ids?: string,
-}
-
-const getCondition = (filter: ICommentFilterType) => {
-  let condition = {};
-  if (filter.post_id) {
-    condition = Object.assign(condition, { post_id: filter.post_id });
-  }
-
-  if (filter.ids) {
-    condition = Object.assign(condition, { _id: filter.ids });
-  }
-
-  return condition;
-};
-
-class MessageRepository implements ICrud {
+class MessageRepository {
   public create = (data: any) => {
     try {
-      return Comment.create(data);
+      return Message.create(data);
     } catch (e) {
-      errorLog(`Comment::create ${e.message}`);
+      errorLog(`Message::create ${e.message}`);
       return promiseNull();
     }
   };
 
-  public delete = (id: string) => {
+  static delete = (id: string) => {
     try {
-      return Comment.findByIdAndRemove(id);
+      return Message.findByIdAndRemove(id);
     } catch (e) {
-      errorLog(`Comment::delete ${e.message}`);
+      errorLog(`Message::delete ${e.message}`);
       return promiseNull();
     }
   };
 
   public get = (id: string) => {
     try {
-      return Comment.findById(id).populate('reply_to', 'username');
+      return Message.findById(id).populate('reply_to', 'username');
     } catch (e) {
-      errorLog(`Comment::find ${e.message}`);
+      errorLog(`Message::find ${e.message}`);
       return promiseNull();
     }
   };
 
   public update = (data: any) => {
     try {
-      return Comment.findByIdAndUpdate(data.comment_id, data, { new: true });
+      return Message.findByIdAndUpdate(data.Message_id, data, { new: true });
     } catch (e) {
       errorLog(`User::update ${e.message}`);
       return promiseNull();
     }
   };
 
-  // public count = (filter: ICommentFilterType) => {
-  //   try {
-  //     const condition = getCondition(filter);
-  //     if (JSON.stringify(condition) === JSON.stringify({})) {
-  //       return Comment.estimatedDocumentCount();
-  //     } else {
-  //       return Comment.countDocuments(condition);
-  //     }
-  //   } catch (e) {
-  //     errorLog(`Comment::count ${e.message}`);
-  //     return promiseNull();
-  //   }
-  // };
+  public getMyMessage = (conversationId: string) => {
+    try {
+      return Message.find({
+        conversationId: conversationId
+      })
+      .limit(10)
+      .sort({ created_at: -1 })
+    } catch (error) {
+      console.log({ error })
+    }
+  }
 
+  public getMoreMessage = (conversationId: string, lastDate) => {
+    try {
+      return Message.find({
+        conversationId,
+        created_at: {
+          $lt: new Date(lastDate).toISOString(),
+        }
+      })
+      .limit(20)
+      .sort({ created_at: -1 })
+    } catch (error) {
+      console.log({ error })
+    }
+  }
 
+  public getMyList = (senderId: string) => {
+    try {
+
+    } catch (error) {
+      console.log({ error })
+    }
+  }
 }
 
 const MessageRepositoryPresenter = new MessageRepository();
