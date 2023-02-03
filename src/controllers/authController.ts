@@ -1,22 +1,27 @@
-import { checkPassword, hashPassword } from './../utils/crypt';
+import { checkPassword, hashPassword } from "./../utils/crypt";
 
 import jwt from "jsonwebtoken";
-import UserRepositories from '../db/repositories/UserReponsitories'
+import UserRepositories from "../db/repositories/UserReponsitories";
 class Authentication {
-
   public getUserByToken = async (req, res) => {
-
     const userId = req.user;
     const user = await UserRepositories.get(userId);
-    return res.status(200).send({ message: "Đăng nhập thành công", user: JSON.stringify(user), status: true });
-
+    return res
+      .status(200)
+      .send({
+        message: "Đăng nhập thành công",
+        user: JSON.stringify(user),
+        status: true,
+      });
   };
 
   public register = async (req, res) => {
     try {
       const { email, password, username } = req.body;
       if (!email || !password || !username) {
-        return res.status(500).send({ message: "Vui lòng nhập đầy đủ thông tin !" });
+        return res
+          .status(500)
+          .send({ message: "Vui lòng nhập đầy đủ thông tin !" });
       }
       const regex = new RegExp(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i);
       if (!regex.test(email)) {
@@ -24,21 +29,27 @@ class Authentication {
       }
       const user = await UserRepositories.findByEmail(email);
       if (user) {
-        return res.status(500).send({ message: "Email đã tồn tại trong hệ thống" });
+        return res
+          .status(500)
+          .send({ message: "Email đã tồn tại trong hệ thống" });
       }
       if (password.length < 6) {
-        return res.status(500).send({ message: "Mật khẩu phải dài hơn 6 ký tự" });
+        return res
+          .status(500)
+          .send({ message: "Mật khẩu phải dài hơn 6 ký tự" });
       }
       if (password.length > 25) {
-        return res.status(500).send({ message: "Mật khẩu phải ngắn hơn 25 ký tự" });
+        return res
+          .status(500)
+          .send({ message: "Mật khẩu phải ngắn hơn 25 ký tự" });
       }
-      await UserRepositories.create({
+      const newUser = await UserRepositories.create({
         email,
         password: await hashPassword(password),
-        username
+        username,
       });
-      return res.status(200).json({ message: "oke" })
-
+      console.log({ newUser });
+      return res.status(200).json({ message: "oke" });
     } catch (err) {
       return res.status(500).send({ message: err.message });
     }
@@ -48,28 +59,60 @@ class Authentication {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
-        return res.status(500).send({ message: "Vui lòng nhập đầy đủ thông tin !", status: "false" });
+        return res
+          .status(500)
+          .send({
+            message: "Vui lòng nhập đầy đủ thông tin !",
+            status: "false",
+          });
       }
       const userByEmail = await UserRepositories.getPasswordByEmail(email);
-      const userByUsername = await UserRepositories.getPasswordByUserName(email);
+      const userByUsername = await UserRepositories.getPasswordByUserName(
+        email
+      );
       if (!userByUsername && !userByEmail) {
-        return res.status(500).send({ message: "Tên đăng nhập hoặc mật khẩu không đúng!", status: false });
+        return res
+          .status(500)
+          .send({
+            message: "Tên đăng nhập hoặc mật khẩu không đúng!",
+            status: false,
+          });
       }
-      const user = userByUsername ? userByUsername : userByEmail
+      const user = userByUsername ? userByUsername : userByEmail;
       const checkPasswordInput = await checkPassword(password, user.password);
       if (!checkPasswordInput) {
-        return res.status(500).send({ message: "Có cái mật khẩu không nhớ được là sao, buddy?", status: false });
+        return res
+          .status(500)
+          .send({
+            message: "Có cái mật khẩu không nhớ được là sao, buddy?",
+            status: false,
+          });
       }
 
-      const jsonWebToken = jwt.sign({ userID: user._id.toString() }, process.env.JWT_SECRET, {
-        expiresIn: "24h",
-      });
-      const refreshToken = jwt.sign({ userID: user._id.toString() }, process.env.JWT_SECRET, {
-        expiresIn: "1y",
-      });
-      
-      return res.status(200).send({ message: "Đăng nhập thành công", token: jsonWebToken, refreshToken, user: JSON.stringify(user), status: true });
+      const jsonWebToken = jwt.sign(
+        { userID: user._id.toString() },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "24h",
+        }
+      );
+      const refreshToken = jwt.sign(
+        { userID: user._id.toString() },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1y",
+        }
+      );
 
+      return res
+        .status(200)
+        .send({
+          message: "Đăng nhập thành công",
+          token: jsonWebToken,
+          refreshToken,
+          user: JSON.stringify(user),
+          status: true,
+        });
     } catch (err) {
       return res.status(500).send({ message: err.message, status: false });
     }
@@ -86,7 +129,6 @@ class Authentication {
     const check = await jwt.verify(refreshToken, process.env.JWT_SECRET);
     // true => create new access token
     if (check.userID) {
-
       const checkUser = await UserRepositories.get(check.userID);
       if (!checkUser) {
         return res.status(403).send({
@@ -105,17 +147,12 @@ class Authentication {
         refreshToken: refreshToken,
         msg: "oke",
       });
-
     } else {
       return res.status(403).send({
         message: "Token expired, Please try again",
       });
     }
-
   };
-
-
-
 }
 
 const AuthenticationController = new Authentication();

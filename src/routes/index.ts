@@ -1,15 +1,15 @@
-import express from 'express';
+import express from "express";
 const route = express.Router();
 
-import { authRouter } from './authRoute';
-import { homeRouter } from './homeRoute';
-import { commentRouter } from './commentRoute'
-import { postRouter } from './postRoute'
-import { notificationRouter } from './notificationRoute';
-import { messageRouter } from './messageRoute'
-import { conversationRouter } from './conversation'
+import { messageRouter } from "./messageRoute";
+import { conversationRouter } from "./conversation";
+import { authRouter } from "./authRoute";
+import { homeRouter } from "./homeRoute";
+import { commentRouter } from "./commentRoute";
+import { postRouter } from "./postRoute";
+import { notificationRouter } from "./notificationRoute";
+import { testRouter } from "./test";
 let initialRouter = (app) => {
-  
   authRouter(route, app);
   homeRouter(route, app);
   commentRouter(route, app);
@@ -17,9 +17,8 @@ let initialRouter = (app) => {
   notificationRouter(route, app);
   messageRouter(route, app);
   conversationRouter(route, app);
-  
-}
 
-export {
-  initialRouter
-}
+  testRouter(route, app);
+};
+
+export { initialRouter };
