@@ -9,26 +9,27 @@ const userSchema: any = new Schema(
       city: {
         default: "",
         type: String,
-        trim : true
+        trim: true,
       },
       district: {
         default: "",
         type: String,
-        trim : true
+        trim: true,
       },
       ward: {
         default: "",
         type: String,
-        trim : true
+        trim: true,
       },
       detail: {
         default: "",
         type: String,
-        trim : true
+        trim: true,
       },
     },
     avatar: {
-      default: "https://lh3.googleusercontent.com/proxy/XdcnQDfY4KMzHRA1FueHzVIEYmR2-JDm7r6Q_PMuZTFBlwIWNynTjcs1c_aerZcm3uc7xArupf0M6_F-Ao5qrqu45FoheQwzV8n-c5y46Osx2ScMlIQhHch7VSD6C3Nj7oG7gG7C3kui37fLlwxmWA",
+      default:
+        "https://lh3.googleusercontent.com/proxy/XdcnQDfY4KMzHRA1FueHzVIEYmR2-JDm7r6Q_PMuZTFBlwIWNynTjcs1c_aerZcm3uc7xArupf0M6_F-Ao5qrqu45FoheQwzV8n-c5y46Osx2ScMlIQhHch7VSD6C3Nj7oG7gG7C3kui37fLlwxmWA",
       type: String,
     },
     birthday: {
@@ -38,14 +39,14 @@ const userSchema: any = new Schema(
     gender: {
       default: "hidden",
       type: String,
-      enum: ["male", "female", "unknown", "hidden"]
+      enum: ["male", "female", "unknown", "hidden"],
     },
     username: {
       default: "",
       type: String,
-      trim : true,
+      trim: true,
       require,
-      unique : true
+      unique: true,
     },
     spam: {
       type: Number,
@@ -55,19 +56,19 @@ const userSchema: any = new Schema(
       private_account: {
         default: false,
         type: Boolean,
-      }
+      },
     },
     user_status: {
       type: String,
-      trim : true,
+      trim: true,
       enum: ["banned", "deleted", "new", "confirmed"],
-      default : "new"
+      default: "new",
     },
     online_status: {
       type: String,
-      trim : true,
+      trim: true,
       enum: ["online", "away", "offline", "busy", "hidden"],
-      default : "offline"
+      default: "offline",
     },
 
     followers: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
@@ -75,19 +76,19 @@ const userSchema: any = new Schema(
     email: {
       default: "",
       type: String,
-      trim : true,
+      trim: true,
       unique: true,
       require,
     },
     password: {
       default: "",
       type: String,
-      trim : true
+      trim: true,
     },
-    password_old : {
+    password_old: {
       default: "",
       type: String,
-      trim : true
+      trim: true,
     },
     is_active: {
       default: false,
@@ -96,62 +97,62 @@ const userSchema: any = new Schema(
     verify_token: {
       default: "",
       type: String,
-      trim : true
+      trim: true,
     },
     facebook: {
       email: {
         default: "",
         type: String,
-        trim : true
+        trim: true,
       },
       token: {
         default: "",
         type: String,
-        trim : true
+        trim: true,
       },
       uid: {
         default: "",
         type: String,
-        trim : true
+        trim: true,
       },
     },
     google: {
       email: {
         default: "",
         type: String,
-        trim : true
+        trim: true,
       },
       token: {
         default: "",
         type: String,
-        trim : true
+        trim: true,
       },
       uid: {
         default: "",
         type: String,
-        trim : true
+        trim: true,
       },
     },
     apple: {
       apple_id: {
         default: "",
         type: String,
-        trim : true
+        trim: true,
       },
       apple_sub: {
         default: "",
         type: String,
-        trim : true
+        trim: true,
       },
     },
-    // posts were saved 
-    post_saved : [{ type: mongoose.Schema.ObjectId, ref: "Post" }],
+    // posts were saved
+    post_saved: [{ type: mongoose.Schema.ObjectId, ref: "Post" }],
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );
 
-userSchema.index({ username : "text"})
-userSchema.index({ email : 1})
+userSchema.index({ username: "text" });
+userSchema.index({ email: 1 });
 
 const User = mongoose.model("User", userSchema);
 

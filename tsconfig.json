@@ -9,8 +9,10 @@
     "noImplicitAny": false
   },
   "include": [
-    "src/app.ts",
+    "src/index.ts",
     "src/declare.d.ts"
   ],
-  "lib": ["es2015"]
+  "lib": [
+    "es2015"
+  ]
 }

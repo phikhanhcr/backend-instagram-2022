@@ -6,7 +6,7 @@ import User from "../models/User/UserModel";
 
 interface IPostFilterType {
   username?: string;
-  ids?: string,
+  ids?: string;
 }
 
 const getCondition = (filter: IPostFilterType) => {
@@ -22,8 +22,6 @@ const getCondition = (filter: IPostFilterType) => {
   }
   return condition;
 };
-
-
 
 class PostRepository implements ICrud {
   public create = (data: any) => {
@@ -46,12 +44,11 @@ class PostRepository implements ICrud {
 
   public get = (id: string) => {
     try {
-      return Post
-        .findById(id)
-        .populate('userId', 'username avatar')
-        .populate("like_list", 'username avatar')
-        .then(data => data)
-        .catch(e => console.log(e))
+      return Post.findById(id)
+        .populate("userId", "username avatar")
+        .populate("like_list", "username avatar")
+        .then((data) => data)
+        .catch((e) => console.log(e));
     } catch (e) {
       // errorLog(`Post::find ${e.message}`);
       return promiseNull();
@@ -67,13 +64,12 @@ class PostRepository implements ICrud {
     }
   };
 
-
   public getByType = (data: any) => {
     try {
       return Post.find({
         userId: data.userId,
-        type: data.type
-      })
+        type: data.type,
+      });
     } catch (e) {
       // errorLog(`Post::find ${e.message}`);
       return promiseNull();
@@ -132,35 +128,39 @@ class PostRepository implements ICrud {
   public getPostFollowing = (me: string) => {
     try {
       // get all user who you are following
-      // save redis, limit , 100 
-      return User.findById(me).then(data => {
-        return data.following;
-      }).then(followers => {
-        // list user 
-        // find their post
-        followers.push(me)
-        return Post.find({ userId: { $in: followers } })
-          .populate('userId', 'username avatar')
-          .populate("like_list", 'username avatar')
-          .limit(20)
-          .sort({ "created_at": 1 })
-          .then(data => {
-            return data;
-          }).catch(e => {
-            // errorLog(`Post::find ${e.message}`);
-            return promiseNull();
-          })
-      }).catch(e => {
-        // errorLog(`Post::find ${e.message}`);
-        return promiseNull();
-      })
-
+      // save redis, limit , 100
+      return User.findById(me)
+        .then((data) => {
+          return data.following;
+        })
+        .then((followers) => {
+          // list user
+          // find their post
+          followers.push(me);
+          return (
+            Post.find({ userId: { $in: followers } })
+              // .populate('userId', 'username avatar')
+              // .populate("like_list", 'username avatar')
+              .limit(20)
+              .sort({ created_at: 1 })
+              .then((data) => {
+                return data;
+              })
+              .catch((e) => {
+                // errorLog(`Post::find ${e.message}`);
+                return promiseNull();
+              })
+          );
+        })
+        .catch((e) => {
+          // errorLog(`Post::find ${e.message}`);
+          return promiseNull();
+        });
     } catch (e) {
       // errorLog(`Post::find ${e.message}`);
       return promiseNull();
     }
-  }
-
+  };
 
   // full text search description
 }

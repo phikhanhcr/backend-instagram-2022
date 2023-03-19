@@ -1,21 +1,25 @@
-FROM node:14
+FROM node:14 AS development
+# ENV NODE_ENV=development
+WORKDIR /usr/ins/app
 
-# Create app directory
-WORKDIR /usr/ins
-
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
-COPY tsconfig.json ./
+COPY package*.json .
 
 RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
 
-# Bundle app source
 COPY . .
 
+RUN npm run build
 
+
+FROM node:14 as production
+ 
 EXPOSE 3001
-CMD [ "node", "dist/app.js" ]
+
+ARG NODE_ENV
+ENV NODE_ENV $NODE_ENV
+
+WORKDIR /usr/ins/app
+
+COPY --from=development /usr/ins/app .
+
+CMD [ "node", "dist/index.js" ]
