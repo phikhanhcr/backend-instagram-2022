@@ -6,13 +6,11 @@ class Authentication {
   public getUserByToken = async (req, res) => {
     const userId = req.user;
     const user = await UserRepositories.get(userId);
-    return res
-      .status(200)
-      .send({
-        message: "Đăng nhập thành công",
-        user: JSON.stringify(user),
-        status: true,
-      });
+    return res.status(200).send({
+      message: "Đăng nhập thành công",
+      user: JSON.stringify(user),
+      status: true,
+    });
   };
 
   public register = async (req, res) => {
@@ -48,7 +46,6 @@ class Authentication {
         password: await hashPassword(password),
         username,
       });
-      console.log({ newUser });
       return res.status(200).json({ message: "oke" });
     } catch (err) {
       return res.status(500).send({ message: err.message });
@@ -59,34 +56,28 @@ class Authentication {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
-        return res
-          .status(500)
-          .send({
-            message: "Vui lòng nhập đầy đủ thông tin !",
-            status: "false",
-          });
+        return res.status(500).send({
+          message: "Vui lòng nhập đầy đủ thông tin !",
+          status: "false",
+        });
       }
       const userByEmail = await UserRepositories.getPasswordByEmail(email);
       const userByUsername = await UserRepositories.getPasswordByUserName(
         email
       );
       if (!userByUsername && !userByEmail) {
-        return res
-          .status(500)
-          .send({
-            message: "Tên đăng nhập hoặc mật khẩu không đúng!",
-            status: false,
-          });
+        return res.status(500).send({
+          message: "Tên đăng nhập hoặc mật khẩu không đúng!",
+          status: false,
+        });
       }
       const user = userByUsername ? userByUsername : userByEmail;
       const checkPasswordInput = await checkPassword(password, user.password);
       if (!checkPasswordInput) {
-        return res
-          .status(500)
-          .send({
-            message: "Có cái mật khẩu không nhớ được là sao, buddy?",
-            status: false,
-          });
+        return res.status(500).send({
+          message: "Có cái mật khẩu không nhớ được là sao, buddy?",
+          status: false,
+        });
       }
 
       const jsonWebToken = jwt.sign(
@@ -104,15 +95,13 @@ class Authentication {
         }
       );
 
-      return res
-        .status(200)
-        .send({
-          message: "Đăng nhập thành công",
-          token: jsonWebToken,
-          refreshToken,
-          user: JSON.stringify(user),
-          status: true,
-        });
+      return res.status(200).send({
+        message: "Đăng nhập thành công",
+        token: jsonWebToken,
+        refreshToken,
+        user: JSON.stringify(user),
+        status: true,
+      });
     } catch (err) {
       return res.status(500).send({ message: err.message, status: false });
     }

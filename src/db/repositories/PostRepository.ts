@@ -47,7 +47,9 @@ class PostRepository implements ICrud {
       return Post.findById(id)
         .populate("userId", "username avatar")
         .populate("like_list", "username avatar")
-        .then((data) => data)
+        .then((data) => {
+          return data;
+        })
         .catch((e) => console.log(e));
     } catch (e) {
       // errorLog(`Post::find ${e.message}`);
@@ -137,20 +139,18 @@ class PostRepository implements ICrud {
           // list user
           // find their post
           followers.push(me);
-          return (
-            Post.find({ userId: { $in: followers } })
-              // .populate('userId', 'username avatar')
-              // .populate("like_list", 'username avatar')
-              .limit(20)
-              .sort({ created_at: 1 })
-              .then((data) => {
-                return data;
-              })
-              .catch((e) => {
-                // errorLog(`Post::find ${e.message}`);
-                return promiseNull();
-              })
-          );
+          return Post.find({ userId: { $in: followers } })
+            .populate("userId", "username avatar")
+            .populate("like_list", "username avatar")
+            .limit(20)
+            .sort({ created_at: 1 })
+            .then((data) => {
+              return data;
+            })
+            .catch((e) => {
+              // errorLog(`Post::find ${e.message}`);
+              return promiseNull();
+            });
         })
         .catch((e) => {
           // errorLog(`Post::find ${e.message}`);
