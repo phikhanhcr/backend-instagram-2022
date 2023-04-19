@@ -78,9 +78,9 @@ class PostRepository implements ICrud {
     }
   };
 
-  public update = (data: any) => {
+  public update = (post_id: string, data: any) => {
     try {
-      return Post.findByIdAndUpdate(data.post_id, data, { new: true });
+      return Post.findByIdAndUpdate(post_id, data, { new: true });
     } catch (e) {
       errorLog(`Post::update ${e.message}`);
       return promiseNull();
@@ -139,7 +139,8 @@ class PostRepository implements ICrud {
           // list user
           // find their post
           followers.push(me);
-          return Post.find({ userId: { $in: followers } })
+          // return Post.find({ userId: { $in: followers } })
+          return Post.find({})
             .populate("userId", "username avatar")
             .populate("like_list", "username avatar")
             .limit(20)

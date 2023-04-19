@@ -1,3 +1,5 @@
+import { RegisterEvent } from "./event/registerEvent";
+import { MQTTAdapter } from "./libs/mqtt/MqttAdapter";
 import { Server } from "socket.io";
 import express from "express";
 import http from "http";
@@ -17,6 +19,9 @@ const io = new Server(server, {
 });
 
 ConnectionDb.connect();
+MQTTAdapter.getClient().then((data) => {});
+RegisterEvent.register();
+
 initApp(app);
 
 app.set("io", io);

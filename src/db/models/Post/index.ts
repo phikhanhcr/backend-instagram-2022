@@ -11,47 +11,54 @@ const postSchema: any = new Schema(
     description: {
       default: "",
       type: String,
-      trim: true
+      trim: true,
     },
-    images: [{
-      type: String
-    }],
+    images: [
+      {
+        type: String,
+      },
+    ],
     spam: {
       type: Number,
       default: 0,
     },
-    tags: [{
-      type: String,
-      trim: true
-    }],
+    tags: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
 
     // saved and tagged wil
     type: {
       type: String,
-      enum: ['reels', 'post', 'video'],
-      default: "post"
+      enum: ["reels", "post", "video"],
+      default: "post",
     },
-    with_other: [{
-      userId: { type: mongoose.Schema.ObjectId, ref: "User" },
-      username: { type: String },
-      avatar: { type: String },
-      url: { type: String }
-    }],
+    with_other: [
+      {
+        userId: { type: mongoose.Schema.ObjectId, ref: "User" },
+        username: { type: String },
+        avatar: { type: String },
+        url: { type: String },
+      },
+    ],
 
     // like and comment
     like_count: { type: Number, default: 0 },
-    like_list: [{
-      type: mongoose.Schema.ObjectId, ref: "User"
-    }],
+    like_list: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+      },
+    ],
     comment_count: { type: Number, default: 0 },
     allow_comment: { type: Boolean, default: true },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );
 
-postSchema.index({ description: "text" })
-postSchema.index({ username: 1 })
+postSchema.index({ description: "text" });
+postSchema.index({ username: 1 });
 
-const PostModel = mongoose.model("Post", postSchema);
-
-export default PostModel;
+export default mongoose.model("Post", postSchema);

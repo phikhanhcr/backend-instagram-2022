@@ -7,7 +7,7 @@ class Connection {
       if (error) {
         console.log("Error " + error);
       } else {
-        console.log("Connected  mongodb successfully");
+        console.log("Connected mongodb successfully");
       }
     });
   };
