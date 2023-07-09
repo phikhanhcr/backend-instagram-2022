@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const Schema: any = mongoose.Schema;
 
+export enum UserType {
+  USER = "User",
+}
+
 const userSchema: any = new Schema(
   {
     address: {

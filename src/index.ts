@@ -1,3 +1,4 @@
+import { KafkaAdapter } from "./libs/eventsource/KafkaAdapter";
 import { RegisterEvent } from "./event/registerEvent";
 import { MQTTAdapter } from "./libs/mqtt/MqttAdapter";
 import { Server } from "socket.io";
@@ -20,6 +21,7 @@ const io = new Server(server, {
 
 ConnectionDb.connect();
 MQTTAdapter.getClient().then((data) => {});
+KafkaAdapter.connectProducer();
 RegisterEvent.register();
 
 initApp(app);
